@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Search!</title>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+
+  <style>
+
+
+
+      #mySearchBox {
+
+        position: absolute;
+        left: 170px;
+        top: 410px;
+        font-family: helvetica;
+        font-size: 30px;
+        border-width: 1px;
+        height: 46px;
+        width: 500px;
+        color: #4885ed;
+        border-color: #f4c20d;
+        border-style: solid;
+        align-self: center;
+        vertical-align: center;
+        text-transform: capitalize;
+      }
+
+  #ui-id-1 {
+
+    align-self: center;
+    margin-right: 100px;
+    font-family: helvetica;
+    font-size: 30px;
+    border-width: 1px;
+    height: 46px;
+    width: 587px;
+    color: #4885ed;
+    list-style: none;
+  }
+
+
+  #searchButton{
+
+    position: absolute;
+    top: 412px;
+    left: 680px;
+    height: 46px;
+    width: 120px;
+    color: #4885ed;
+    font-family: helvetica;
+    font-size: 30px;
+    background-color: transparent;
+
+}
+
+
+
+    p{
+
+      color: #4885ed;
+      font-family: helvetica;
+      font-size: 30px;
+      padding-top: 50px;
+     padding-left: 100px;
+  }
+
+
+  </style>
+
+
+  <script>
+
+
+    //d3 csv loading
+    d3.csv("https://query.data.world/s/80llnrdfp1z3soikz5tvcvgn9", function(data) {
+      console.log(data);
+        var dataArray = [];
+            dataArray = data.map(function(d) {return d.State;}); // extract all states from state column in data and insert into array
+
+              data.forEach(function(d) {
+                 d["YTD Housing Starts"] = +d["YTD Housing Starts"];
+                });
+
+                  d3.select("#mySearchBox").on("keyup", function() {
+                      gSearch();
+                      });
+
+      //jQuery-ui auto-complete
+        function gSearch() {
+          $('#mySearchBox').autocomplete({
+            source: dataArray,
+            minLength: 1,      // begin auto-complete after (x) characters
+            scroll: true
+          }).focus(function() {
+            $(this).autocomplete("search", "");
+          });
+        }
+
+          d3.select("#searchButton").on("click", function() {  //Keyup function to convert user input to a filter value
+              var UserSearchBoxSelection = document.getElementById('mySearchBox').value
+                  var userSelection = data.filter(function(d) {return d.State == UserSearchBoxSelection;});
+                    d3.selectAll("p").remove() // remove table upon new user selection
+
+            var p = d3.select('body').append('p');
+                p.selectAll('p')
+                .data(userSelection)
+                .enter()
+                .append('p')
+                .html(function(d) { return 'State: ' + d.State + '</br>' + 'YTD Housing Starts: '+ d['YTD Housing Starts']; })
+
+      });
+    });
+  </script>
+</head>
+
+<body onload="document.getElementById('mySearchBox').value=''">
+
+    <input id="mySearchBox" type="text" placeholder="State" autofocus />
+        <input type="button" name="Search"  id="searchButton" value="Search" >
+
+</body>
+</html>
